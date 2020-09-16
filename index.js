@@ -13,6 +13,11 @@ server.use(express.json())
 server.use(cookieParser())
 
 server.use(usersRouter)
+server.get("/", (req, res) => {
+    res.json({
+        message: "Welcome to the Potluck API"
+    })
+})
 server.use((err, req, res, next) => {
 	console.log(err)
 	
