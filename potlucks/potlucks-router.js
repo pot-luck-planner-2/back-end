@@ -141,3 +141,5 @@ function validatePotluckId(req, res, next) {
             res.status(500).json({ message: `there was a problem with your ${req.method} request` })
         })
 }
+
+module.exports = router
