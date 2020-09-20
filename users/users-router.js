@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.get("/api/users", restrict(), async (req, res, next) => {
 	try {
-		res.json(await Users.find())
+		res.json(await Users.findUsers())
 	} catch(err) {
 		next(err)
 	}
@@ -18,9 +18,9 @@ router.post("/api/register", async (req, res, next) => {
 	try {
 		const { name, username, password, email, phone } = req.body
         
-        const usernameConflict = await Users.findBy({ username }).first()
-        const emailConflict = await Users.findBy({ email }).first()
-        const phoneConflict = await Users.findBy({ phone }).first()
+        const usernameConflict = await Users.findUserBy({ username }).first()
+        const emailConflict = await Users.findUserBy({ email }).first()
+        const phoneConflict = await Users.findUserBy({ phone }).first()
         
 
 		if (usernameConflict) {
@@ -41,7 +41,7 @@ router.post("/api/register", async (req, res, next) => {
 			})
 		}
 
-		const newUser = await Users.add({
+		const newUser = await Users.addUser({
             name,
             username,
             password: await bcrypt.hash(password, 14),
@@ -58,7 +58,7 @@ router.post("/api/register", async (req, res, next) => {
 router.post("/api/login", async (req, res, next) => {
 	try {
 		const { username, password } = req.body
-		const user = await Users.findBy({ username }).first()
+		const user = await Users.findUserBy({ username }).first()
 		
 		if (!user) {
 			return res.status(401).json({
