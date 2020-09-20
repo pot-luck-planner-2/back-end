@@ -8,7 +8,7 @@ const router = express.Router()
 // GET ALL POTLUCKS
 router.get("/api/potlucks", restrict(), async (req, res, next) => {
     try {
-        const potlucks = await Potlucks.find()
+        const potlucks = await Potlucks.findPotlucks()
         res.json(potlucks)
     } catch(err) {
         next(err)
