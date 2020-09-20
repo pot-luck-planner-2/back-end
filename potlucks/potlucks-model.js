@@ -1,4 +1,5 @@
 const db = require("../database/config")
+const { addFood, findFoodByName } = require("../foods/foods-model")
 
 async function add(potluck) {
     const [id] = await db("potlucks").insert(potluck, "id")
@@ -10,8 +11,18 @@ async function update(potluck) {
     return findById(id)
 }
 
-async function addFoodToPotluck() {
-    const [food] = await
+async function addFoodToPotluck(food, id) {
+   let newFood = await findFoodByName(food.name)
+   if (!newFood) {
+     newFood = await addFood(food)
+   }
+
+   await db("potlucks_foods").insert({food_id: newFood.id, potluck_id: id, isTaken: false})
+
+   return db("potlucks_foods as pf")
+        .innerJoin("foods as f", "f.id", "pf.food_id")
+        .innerJoin("potlucks as p", "p.id", "pf.potluck_id")
+        .select("p.name as potluck_name", "f.name as food_name", "pf.isTaken")
 }
 
 function find() {
@@ -38,6 +49,7 @@ function findById(id) {
 module.exports = {
     add,
     update,
+    addFoodToPotluck,
 	find,
 	findBy,
 	findById,
