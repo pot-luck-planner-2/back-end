@@ -9,9 +9,10 @@ async function addPotluck(potluck) {
     return findByPotluckId(id)
 }
 
-async function updatePotluck(id, changes) {
-    const [id] = await db("potlucks").update(changes, "id")
-    return findByPotluckId(id)
+function updatePotluck(id, changes) {
+	return db("potluck")
+		.where({ id })
+		.update(changes)
 }
 
 function deletePotluck(id) {
