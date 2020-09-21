@@ -127,7 +127,7 @@ router.delete("/potluck/:id", validatePotluckId, (req, res, next) => {
 // middleware
 function validatePotluckId(req, res, next) {
     
-    Potlucks.findById(req.params.id)
+    Potlucks.findPotluckById(req.params.id)
         .then(potluck => {
             if (potluck) {
                 req.potluck = potluck
