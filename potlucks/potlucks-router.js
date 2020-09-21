@@ -18,7 +18,7 @@ router.get("/api/potlucks", restrict(), async (req, res, next) => {
 // GET POTLUCK BY ID
 router.get("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res, next) => {
     try {
-        const potluck = await Potlucks.findById(req.params.id)
+        const potluck = await Potlucks.findPotluckById(req.params.id)
         res.json(potluck)
     } catch(err) {
         next(err)
