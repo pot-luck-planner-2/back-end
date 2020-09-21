@@ -6,7 +6,7 @@ const {findUserById, findUserBy} = require("../users/users-model")
 
 async function addPotluck(potluck) {
     const [id] = await db("potlucks").insert(potluck, "id")
-    return findByPotluckId(id)
+    return findPotluckById(id)
 }
 
 function updatePotluck(id, changes) {
