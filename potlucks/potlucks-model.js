@@ -63,7 +63,7 @@ function findPotluckById(id) {
     return db("potlucks as p")
         .innerJoin("users as u", "u.id", "p.host_id")
         .select("p.id", "p.name", "p.location", "p.date", "u.name as host_name")
-        .where({ id })
+        .where({ "p.id": id })
         .first()
 }
 
