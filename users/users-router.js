@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const Users = require("./users-model")
 const restrict = require("../middleware/restrict")
+require("dotenv").config()
 
 const router = express.Router()
 
@@ -73,7 +74,7 @@ router.post("/api/login", async (req, res, next) => {
 				message: "Invalid Credentials",
 			})
 		}
-
+		console.log(process.env.JWT_SECRET)
 		const token = jwt.sign({
 			userID: user.id,
 		}, process.env.JWT_SECRET)

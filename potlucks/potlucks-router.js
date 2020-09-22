@@ -73,14 +73,30 @@ router.post("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res,
         })
 
     } catch(err) {
-        next(err)
+        res.status(409).json({
+            message: "Food already exists for this potluck",
+            err: err
+        })
     }
 })
 
 // UPDATE FOOD TO TAKEN
 router.put("/api/potlucks/:pid/foods/:fid", restrict(), async (req, res, next) => {
     try {
-
+        const { pid } = req.params.pid
+        const { fid } = req.params.fid
+        const changes = req.body
+        Potlucks.findPotluckFoodById(pid, fid)
+        .then(food => {
+            if (food) {
+                Potlucks.updateTaken(pid, fid, changes)
+                .then (updatedFood => {
+                    res.json(updatedFood)
+                })
+            } else {
+                res.status(404).json({ message: "You need to add this food to the potluck first."})
+            }
+        })
     } catch(err) {
         next(err)
     }
