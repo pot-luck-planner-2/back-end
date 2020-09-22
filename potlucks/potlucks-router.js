@@ -83,8 +83,7 @@ router.post("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res,
 // UPDATE FOOD TO TAKEN
 router.put("/api/potlucks/:pid/foods/:fid", restrict(), async (req, res, next) => {
     try {
-        const { pid } = req.params.pid
-        const { fid } = req.params.fid
+        const {pid, fid} = req.params
         const changes = req.body
         Potlucks.findPotluckFoodById(pid, fid)
         .then(food => {

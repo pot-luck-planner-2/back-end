@@ -84,6 +84,8 @@ async function updateTaken(pid, fid, changes) {
 }
 
 function findPotluckFoodById(pid, fid) {
+    console.log("Product id", pid)
+    console.log("Food id", fid)
     return db("potlucks_foods as pf")
         .innerJoin("foods as f", "f.id", "pf.food_id")
         .innerJoin("potlucks as p", "p.id", "pf.potluck_id")
