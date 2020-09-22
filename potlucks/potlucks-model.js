@@ -36,10 +36,10 @@ async function addFoodToPotluck(food, id) {
         .where({ "p.id": id })
 }
 
-async function addUserToPotluck(user, id) {
-    const newGuest = await findUserBy(user.name)
- 
-    await db("potlucks_users").insert({user_id: newGuest.id, potluck_id: id * 1, isAttending: false})
+async function addUserToPotluck(pid, uid) {
+    await db("")
+
+    await db("potlucks_users").insert({user_id: uid, potluck_id: pid, isAttending: false})
  
     return db("potlucks_users as pu")
          .innerJoin("users as u", "u.id", "pu.user_id")

@@ -74,15 +74,17 @@ router.post("/api/login", async (req, res, next) => {
 				message: "Invalid Credentials",
 			})
 		}
-		console.log(process.env.JWT_SECRET)
-		const token = jwt.sign({
-			userID: user.id,
-		}, process.env.JWT_SECRET)
+		
+		// const token = jwt.sign({
+		// 	userID: user.id,
+		// }, process.env.JWT_SECRET)
 
-		res.cookie("token", token)
+		/// res.cookie("token", token) if you want to use cookies
 
 		res.json({
+			token:jwt.sign({userID: user.id,}, process.env.JWT_SECRET),
 			message: `Welcome ${user.username}!`,
+			
 		})
 	} catch(err) {
 		next(err)

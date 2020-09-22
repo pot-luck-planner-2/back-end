@@ -102,9 +102,9 @@ router.put("/api/potlucks/:pid/foods/:fid", restrict(), async (req, res, next) =
 })
 
 // ADD USER TO POTLUCK
-router.post("/api/potlucks/:id", restrict(), async (req, res, next) => {
+router.post("/api/potlucks/:pid/users/:uid", restrict(), async (req, res, next) => {
     try {
-        const { id } = req.params
+        const { pid, uid } = req.params
         const user = req.body
 
         Potlucks.addUserToPotluck(user, id)
