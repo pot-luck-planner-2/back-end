@@ -48,9 +48,12 @@ async function addUserToPotluck(pid, uid) {
  }
 
   async function updateAttending(pid, uid, changes) {
-    return db("potlucks_users")
+    await db("potlucks_users as pu")
     .where({"potluck_id": pid, "user_id": uid})
     .update(changes)
+    
+
+    return findPotluckGuestById(pid, uid)
   }
 
 function findPotlucks() {
@@ -82,10 +85,10 @@ async function addFood(food) {
 }
 
 async function updateTaken(pid, fid, changes) {
-    return db("potlucks_foods")
+    await db("potlucks_foods")
         .where({"potluck_id": pid, "food_id": fid})
         .update(changes)
-
+    return findPotluckFoodById(pid, fid)
 }
 
 function findPotluckFoodById(pid, fid) {
@@ -94,7 +97,7 @@ function findPotluckFoodById(pid, fid) {
     return db("potlucks_foods as pf")
         .innerJoin("foods as f", "f.id", "pf.food_id")
         .innerJoin("potlucks as p", "p.id", "pf.potluck_id")
-        .select("p.name as potluck_name", "f.name as food_name", "pf.isTaken")
+        .select("p.id as potluck_id", "p.name as potluck_name", "f.id as food_id", "f.name as food_name", "pf.isTaken")
         .where({"pf.potluck_id": pid, "pf.food_id": fid})
         
 }
