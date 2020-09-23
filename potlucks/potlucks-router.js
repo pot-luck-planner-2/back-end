@@ -77,7 +77,7 @@ router.post("/api/potlucks/:pid", restrict(), validatePotluckId, async (req, res
     }
 })
 
-// FIND ALL POTLUCK FOOD
+// GET ALL POTLUCK FOOD
 router.get("/api/potlucks/:pid/foods", restrict(), validatePotluckId, async (req, res, next) => {
     try {
         const { pid } = req.params
@@ -156,7 +156,7 @@ router.put("/api/potlucks/:pid/users/:uid", restrict(), validatePotluckId, valid
 })
 
 // DELETE POTLUCK
-router.delete("/api/potluck/:pid", validatePotluckId, (req, res, next) => {
+router.delete("/api/potlucks/:pid", validatePotluckId, (req, res, next) => {
 	Potlucks.deletePotluck(req.params.pid)
 		.then(() => {
 			res.status(200).json({
