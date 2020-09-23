@@ -32,12 +32,11 @@ async function addFoodToPotluck(food, id) {
    return db("potlucks_foods as pf")
         .innerJoin("foods as f", "f.id", "pf.food_id")
         .innerJoin("potlucks as p", "p.id", "pf.potluck_id")
-        .select("p.name as potluck_name", "f.name as food_name", "pf.isTaken")
+        .select("p.name as potluck_name","f.id as food_id", "f.name as food_name", "pf.isTaken")
         .where({ "p.id": id })
 }
 
 async function addUserToPotluck(pid, uid) {
-    await db("")
 
     await db("potlucks_users").insert({user_id: uid, potluck_id: pid, isAttending: false})
  
@@ -45,8 +44,14 @@ async function addUserToPotluck(pid, uid) {
          .innerJoin("users as u", "u.id", "pu.user_id")
          .innerJoin("potlucks as p", "p.id", "pu.potluck_id")
          .select("p.name as potluck_name", "u.name as user_name", "pu.isAttending")
-         .where({ "p.id": id })
+         .where({ "p.id": pid })
  }
+
+  async function updateAttending(pid, uid, changes) {
+    return db("potlucks_users")
+    .where({"potluck_id": pid, "user_id": uid})
+    .update(changes)
+  }
 
 function findPotlucks() {
     return db("potlucks as p")
@@ -84,14 +89,30 @@ async function updateTaken(pid, fid, changes) {
 }
 
 function findPotluckFoodById(pid, fid) {
-    console.log("Product id", pid)
-    console.log("Food id", fid)
+    ///console.log("Product id", pid)
+    ///console.log("Food id", fid)
     return db("potlucks_foods as pf")
         .innerJoin("foods as f", "f.id", "pf.food_id")
         .innerJoin("potlucks as p", "p.id", "pf.potluck_id")
         .select("p.name as potluck_name", "f.name as food_name", "pf.isTaken")
         .where({"pf.potluck_id": pid, "pf.food_id": fid})
         
+}
+
+function findAllPotluckFood(pid) {
+    return db("potlucks_foods as pf")
+        .innerJoin("foods as f", "f.id", "pf.food_id")
+        .innerJoin("potlucks as p", "p.id", "pf.potluck_id")
+        .select("p.name as potluck_name", "f.name as food_name", "pf.isTaken")
+        .where({"pf.potluck_id": pid})
+}
+
+function findPotluckGuestById(pid, uid) {
+    return db("potlucks_users as pu")
+        .innerJoin("users as u", "u.id", "pu.user_id")
+        .innerJoin("potlucks as p", "p.id", "pu.potluck_id")
+        .select("p.id as potluck_id", "p.name as potluck_name", "u.id as user_id", "u.name as guest_name", "pu.isAttending")
+        .where({"pu.potluck_id": pid, "pu.user_id": uid})
 }
 
 function findFood() {
@@ -117,12 +138,15 @@ module.exports = {
     deletePotluck,
     addFoodToPotluck,
     addUserToPotluck,
+    updateAttending,
 	findPotlucks,
 	findPotluckBy,
     findPotluckById,
     addFood,
     updateTaken,
     findPotluckFoodById,
+    findAllPotluckFood,
+    findPotluckGuestById,
 	findFood,
 	findFoodByName,
 	findFoodById,

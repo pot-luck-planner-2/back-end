@@ -7,7 +7,8 @@ function restrict() {
 		}
 
 		try {
-			const token = req.cookies.token
+			//const token = req.cookies.token if you want to use cookies
+			const token = req.headers.token
 			if (!token) {
 				return res.status(401).json(authError)
 			}
@@ -17,7 +18,7 @@ function restrict() {
 					return res.status(401).json(authError)
 				}
 
-				req.token = decoded
+				//req.token = decoded for cookies
 
 				next()
 			})

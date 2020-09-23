@@ -16,9 +16,9 @@ router.get("/api/potlucks", restrict(), async (req, res, next) => {
 })
 
 // GET POTLUCK BY ID
-router.get("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res, next) => {
+router.get("/api/potlucks/:pid", restrict(), validatePotluckId, async (req, res, next) => {
     try {
-        const potluck = await Potlucks.findPotluckById(req.params.id)
+        const potluck = await Potlucks.findPotluckById(req.params.pid)
         res.json(potluck)
     } catch(err) {
         next(err)
@@ -26,7 +26,7 @@ router.get("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res, 
 })
 
 // ADD POTLUCK
-router.post("/api/potlucks", restrict(), async (req, res, next) => {
+router.post("/api/potlucks", restrict(), (req, res, next) => {
     try {
         const potluckData = req.body
         Potlucks.addPotluck(potluckData)
@@ -40,9 +40,9 @@ router.post("/api/potlucks", restrict(), async (req, res, next) => {
 })
 
 // UPDATE POTLUCK
-router.put("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res, next) => {
+router.put("/api/potlucks/:pid", restrict(), validatePotluckId, (req, res, next) => {
     try {
-        const { id } = req.params
+        const { pid } = req.params
         const potluckData = req.body
         Potlucks.findPotluckById(id)
         .then(potluck => {
@@ -62,21 +62,29 @@ router.put("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res, 
 })
 
 // ADD FOOD TO POTLUCK
-router.post("/api/potlucks/:id", restrict(), validatePotluckId, async (req, res, next) => {
+router.post("/api/potlucks/:pid", restrict(), validatePotluckId, async (req, res, next) => {
     try {
-        const { id } = req.params
+        const { pid } = req.params
         const food = req.body
-
-        Potlucks.addFoodToPotluck(food, id)
-        .then(food => {
-            res.status(201).json(food)
-        })
+        console.log(req.body)
+        const addedFood = await Potlucks.addFoodToPotluck(food, id)
+        console.log(addedFood)
+        res.status(201).json(addedFood)
 
     } catch(err) {
-        res.status(409).json({
-            message: "Food already exists for this potluck",
-            err: err
-        })
+        next(err)
+    }
+})
+
+// FIND ALL POTLUCK FOOD
+router.get("/api/potlucks/:pid/foods", restrict(), async (req, res, next) => {
+    try {
+        const { pid } = req.params
+        const potluckfoods =  await Potlucks.findAllPotluckFood(pid)
+        res.json(potluckfoods)
+
+    } catch(err) {
+        next(err)
     }
 })
 
@@ -85,41 +93,61 @@ router.put("/api/potlucks/:pid/foods/:fid", restrict(), async (req, res, next) =
     try {
         const {pid, fid} = req.params
         const changes = req.body
-        Potlucks.findPotluckFoodById(pid, fid)
-        .then(food => {
-            if (food) {
-                Potlucks.updateTaken(pid, fid, changes)
-                .then (updatedFood => {
-                    res.json(updatedFood)
-                })
+        const potluck = await Potlucks.findPotluckFoodById(pid, fid)
+            if (potluck) {
+                 const updatedFood = await Potlucks.updateTaken(pid, fid, changes)
+                res.json(updatedFood)
             } else {
                 res.status(404).json({ message: "You need to add this food to the potluck first."})
             }
+        } catch(err) {
+        next(err)
+    }
+})
+
+// ADD GUEST(user) TO POTLUCK
+router.post("/api/potlucks/:pid/users/:uid", restrict(), validatePotluckId, async (req, res, next) => {
+    try {
+        const { pid, uid } = req.params
+        const guest = await Potlucks.findPotluckGuestById(pid, uid)
+        console.log(guest)
+        if (guest.length) {
+            res.status(409).json({ message: "This guest has already been invited to your potluck."})
+        } else {
+            Potlucks.addUserToPotluck(pid, uid)
+        .then(user => {
+            res.status(201).json(user)
         })
+        }
+
     } catch(err) {
         next(err)
     }
 })
 
-// ADD USER TO POTLUCK
-router.post("/api/potlucks/:pid/users/:uid", restrict(), async (req, res, next) => {
+// GET POTLUCK GUEST BY ID
+router.get("/api/potlucks/:pid/users/:uid", restrict(), async (req, res, next) => {
     try {
         const { pid, uid } = req.params
-        const user = req.body
-
-        Potlucks.addUserToPotluck(user, id)
-        .then(user => {
-            res.status(201).json(user)
-        })
-
+        const guest = await Potlucks.findPotluckGuestById(pid, uid)
+        res.json(guest)
     } catch(err) {
         next(err)
     }
 })
 
 // UPDATE USER TO ATTENDING
-router.put("/api/potlucks/:pid/users/:uid", restrict(), async (req, res, next) => {
+router.put("/api/potlucks/:pid/users/:uid", restrict(), validatePotluckId, async (req, res, next) => {
     try {
+    const { pid, uid } = req.params
+    const changes = req.body
+    const guest = await Potlucks.findPotluckGuestById(pid, uid)
+    if (guest) {
+        const updatedGuest = await Potlucks.updateAttending(pid, uid, changes)
+        res.json(updatedGuest)
+    } else {
+        res.status(404).json({message: "That user has not been added to this potluck yet."})
+    }
 
     } catch(err) {
         next(err)
@@ -127,8 +155,8 @@ router.put("/api/potlucks/:pid/users/:uid", restrict(), async (req, res, next) =
 })
 
 // DELETE POTLUCK
-router.delete("/potluck/:id", validatePotluckId, (req, res, next) => {
-	Users.deletePotluck(req.params.id)
+router.delete("/potluck/:pid", validatePotluckId, (req, res, next) => {
+	Users.deletePotluck(req.params.pid)
 		.then(() => {
 			res.status(200).json({
 				message: "The potluck has been deleted"
@@ -142,7 +170,7 @@ router.delete("/potluck/:id", validatePotluckId, (req, res, next) => {
 // middleware
 function validatePotluckId(req, res, next) {
     
-    Potlucks.findPotluckById(req.params.id)
+    Potlucks.findPotluckById(req.params.pid)
         .then(potluck => {
             if (potluck) {
                 req.potluck = potluck

@@ -1,7 +1,7 @@
 const express = require("express")
 const helmet = require("helmet")
 const cors = require("cors")
-const cookieParser = require("cookie-parser")
+//const cookieParser = require("cookie-parser") -- if you want to use cookies
 const usersRouter = require("./users/users-router")
 const potlucksRouter = require("./potlucks/potlucks-router")
 
@@ -11,7 +11,8 @@ const port = process.env.PORT || 8080
 server.use(helmet())
 server.use(cors())
 server.use(express.json())
-server.use(cookieParser())
+
+//server.use(cookieParser()) --if you want to use cookies
 
 server.use(usersRouter)
 server.use(potlucksRouter)
