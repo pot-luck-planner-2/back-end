@@ -156,7 +156,7 @@ router.put("/api/potlucks/:pid/users/:uid", restrict(), validatePotluckId, valid
 })
 
 // DELETE POTLUCK
-router.delete("/potluck/:pid", validatePotluckId, (req, res, next) => {
+router.delete("/api/potluck/:pid", validatePotluckId, (req, res, next) => {
 	Potlucks.deletePotluck(req.params.pid)
 		.then(() => {
 			res.status(200).json({
