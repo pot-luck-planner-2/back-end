@@ -45,10 +45,10 @@ router.put("/api/potlucks/:pid", restrict(), validatePotluckId, (req, res, next)
     try {
         const { pid } = req.params
         const potluckData = req.body
-        Potlucks.findPotluckById(id)
+        Potlucks.findPotluckById(pid)
         .then(potluck => {
             if (potluck) {
-                Potlucks.updatePotluck(potluckData, id)
+                Potlucks.updatePotluck(potluckData, pid)
                 .then (updatePotluck => {
                     res.json(updatePotluck)
                 })
@@ -156,7 +156,7 @@ router.put("/api/potlucks/:pid/users/:uid", restrict(), validatePotluckId, valid
 })
 
 // DELETE POTLUCK
-router.delete("/api/potlucks/:pid", validatePotluckId, (req, res, next) => {
+router.delete("/api/potlucks/:pid", restrict(), validatePotluckId, (req, res, next) => {
 	Potlucks.deletePotluck(req.params.pid)
 		.then(() => {
 			res.status(200).json({
