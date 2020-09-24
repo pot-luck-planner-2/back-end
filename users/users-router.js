@@ -84,6 +84,7 @@ router.post("/api/login", async (req, res, next) => {
 		res.json({
 			token:jwt.sign({userID: user.id,}, process.env.JWT_SECRET),
 			message: `Welcome ${user.username}!`,
+			userID: user.id,
 			
 		})
 	} catch(err) {
