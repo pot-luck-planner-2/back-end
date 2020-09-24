@@ -41,23 +41,19 @@ router.post("/api/potlucks", restrict(), (req, res, next) => {
 })
 
 // UPDATE POTLUCK
-router.put("/api/potlucks/:pid", restrict(), validatePotluckId, (req, res, next) => {
+router.put("/api/potlucks/:pid", restrict(), validatePotluckId, async (req, res, next) => {
     try {
         const { pid } = req.params
         const potluckData = req.body
-        Potlucks.findPotluckById(pid)
-        .then(potluck => {
-            if (potluck) {
-                Potlucks.updatePotluck(potluckData, pid)
-                .then (updatePotluck => {
-                    res.json(updatePotluck)
-                })
+        const potluck = await Potlucks.findPotluckById(pid)
+        if (potluck) {
+                const updatedPotluck = await Potlucks.updatePotluck(pid, potluckData)
+                res.json(updatedPotluck)
+                
             } else {
                 res.status(404).json({ message: 'Could not find potluck with given ID'})
             }
-        })
-
-    } catch(err) {
+        } catch(err) {
         next(err)
     }
 })
