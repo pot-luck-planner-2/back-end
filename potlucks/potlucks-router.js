@@ -63,9 +63,7 @@ router.post("/api/potlucks/:pid", restrict(), validatePotluckId, async (req, res
     try {
         const { pid } = req.params
         const food = req.body
-        console.log(req.body)
         const addedFood = await Potlucks.addFoodToPotluck(food, pid)
-        console.log(addedFood)
         res.status(201).json(addedFood)
 
     } catch(err) {
